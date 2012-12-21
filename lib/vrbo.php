@@ -4,11 +4,39 @@
 class vrbo{
 	private $url;
 
-   function __construct($url) {
-     $this->url = $url;
-    }
-	public function getinfo()
+    function __construct() 
 	{
+		//..
+    }
+	public function getinfo($url)
+	{
+		// Create DOM from URL or file
+		$html = file_get_html($url);
+ 
+		foreach($html->find('div[class=cal-month]') as $row) {
+			$mon_name = $row->find('b',0)->plaintext;
+
+			foreach($row->find('table tr td') as $calMonthTD) {
+				$status = "open";
+				if(isset($calMonthTD->class) && $calMonthTD->class == "strike"){
+					$status = "close";
+				}
+				$day = $calMonthTD->plaintext;
+				if($day>0){
+					$this->savetodb($mon_name,$day, $status);
+				}
+			}
+		}
+	}
+	function savetodb($mon_name,$day,$status){ 
+		//format date
+		
+		//savetodb
+		$daytime =  strftime("%d %b %Y",strtotime($day."-".$mon_name));
+		echo $daytime.$status."<br>";
+	}
+	//no third party plugin using
+	function getinfo_raw($url){
 		$pagecontent=getwebcontent($this->url);
 		preg_match_all("/<div class=\"cal-month\">.*?<\/div>/si", $pagecontent, $match);
 		$months = $match[0];
@@ -38,20 +66,8 @@ class vrbo{
 					$this->insertdb($mon_name,$day[1][0]);
 					}
 				} 
-			} 
-		}
-	}
-	function insertdb($mon_name,$content){    
-		echo $mon_name."-".$content."<br>";
-	}
-	function getnewscontent($newsurl){
-		$newscontent=getwebcontent($newsurl);
-		preg_match_all("/<div class=\"cal-month\" id=\"artibody\">([\s\S]*?)<!-- publish_helper_end -->/",$newscontent,$match);
-		$content=preg_replace("/<a.*?<\/a>/si","",$match[1][0]);
-		$content=preg_replace("/<div style=\"overflow:hidden;zoom:1;\" class=\"otherContent_01\">.*?<\/div>/si","",$content);
-		$content=preg_replace("/<div class=\"blk-video\">.*?<div class=\"clearcl\"><\/div>/si","",$content);
-		$content=str_replace("<div style=\"clear:both;height:0;visibility:hiddden;overflow:hidden;\"></div>","",$content);
-		return $content;
+			}/*end for trs*/ 
+		}/*end for months*/ 
 	}
 }
 

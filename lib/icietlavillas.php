@@ -4,10 +4,43 @@
 class icietlavillas{
 	private $url;
 
-   function __construct($url) {
-     $this->url = $url;
+    function __construct() 
+	{
+		//..
     }
-	public function getinfo()
+	public function getinfo($url)
+	{
+		// Create DOM from URL or file
+		$html = file_get_html($url);
+ 
+		foreach($html->find("table[class=monthContent]") as $row) {
+			foreach($row->find('tr th[class=month]') as $calMonthTitle) {
+				if(stripos($calMonthTitle->outertext,"colspan")>0){
+					$mon_name = $calMonthTitle->plaintext;
+				}
+			}
+			foreach($row->find('tr td') as $calMonthTD) {
+				$status = "open";
+				//if($calMonthTD->find('td[class*=busy]',0)){
+				if(stripos($calMonthTD->outertext,"busy")>0){
+					$status = "close";
+				}
+				$day = $calMonthTD->plaintext;
+				if($day>0){
+					$this->savetodb($mon_name,$day, $status);
+				}
+			}
+		}
+	}
+	function savetodb($mon_name,$day,$status){ 
+		//format date
+		
+		//savetodb
+		$daytime =  strftime("%d %b %Y",strtotime($day."-".$mon_name));
+		echo $daytime.$status."<br>";
+	}
+	
+	function getinfo_raw()
 	{
 		$pagecontent=getwebcontent($this->url);
 		preg_match_all("/<table class=\"monthContent\">([\s\S]*?)<\/table>/", $pagecontent, $content);
@@ -51,18 +84,6 @@ class icietlavillas{
 				} 
 			} 
 		}
-	}
-	function insertdb($mon_name,$content){    
-		echo $mon_name."-".$content."<br>";
-	}
-	function getnewscontent($newsurl){
-		$newscontent=getwebcontent($newsurl);
-		preg_match_all("/<div class=\"cal-month\" id=\"artibody\">([\s\S]*?)<!-- publish_helper_end -->/",$newscontent,$match);
-		$content=preg_replace("/<a.*?<\/a>/si","",$match[1][0]);
-		$content=preg_replace("/<div style=\"overflow:hidden;zoom:1;\" class=\"otherContent_01\">.*?<\/div>/si","",$content);
-		$content=preg_replace("/<div class=\"blk-video\">.*?<div class=\"clearcl\"><\/div>/si","",$content);
-		$content=str_replace("<div style=\"clear:both;height:0;visibility:hiddden;overflow:hidden;\"></div>","",$content);
-		return $content;
 	}
 }
 
