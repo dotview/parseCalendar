@@ -13,26 +13,29 @@ class exclusivecaribbean{
 		$snoopy=new Snoopy(); 
  
 		//login:shawna@wheretostay.com, password:fiftyfive
-		$submit_url = "http://calendar.exclusivecaribbeanproperty.com"; 
+		//$submit_url = "http://calendar.exclusivecaribbeanproperty.com"; 
+
 		$submit_vars["username"] = "shawna@wheretostay.com"; // 
 		$submit_vars["password"] = "fiftyfive"; // 
-		$snoopy->submit($submit_url,$submit_vars); 
-		if ($snoopy->results) 
+		$snoopy->submit($url,$submit_vars); 
+		$snoopy->setcookies();
+
+		//echo $url."<br>";
+		$data = $snoopy->results;
+		if ($data) 
 		{ 
-			$this->extactData($url);
+			$this->extactData($data);
 		}		
 	}
-	public function extactData($url)
+	public function extactData($data)
 	{
-		// Create DOM from URL or file
-		$html = file_get_html($url);
-		echo $html->plaintext;
-		
+		$html = str_get_html($data);
+		//$html = file_get_html($url);
 		foreach($html->find("div[class=year_month]") as $row) {
 			$mon_name = $row->find('div[class=month_name]',0)->plaintext;
 			foreach($row->find('div[rel]') as $calMonthTD) {
 				$status = "close";
-				if(stripos($calMonthTD->outertext,"dt_on")>0){
+				if(stripos($calMonthTD->outertext,"dt_off")>0){
 					$status = "open";
 				}
 				$day = $calMonthTD->rel;

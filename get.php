@@ -6,6 +6,8 @@ include("lib/vrbo.php");
 include("lib/icietlavillas.php");
 include("lib/bajanservices.php");
 include("lib/exclusivecaribbean.php");
+include("lib/bluewaysoftware.php");
+include("lib/tropicalvillas.php");
 
 //$svr = new vrbo();
 //$svr->getinfo("http://www.vrbo.com/Calendar.mvc/Calendar/49395");
@@ -16,8 +18,14 @@ include("lib/exclusivecaribbean.php");
 //$svr = new bajanservices();
 //$svr->getinfo("http://reservations.bajanservices.com/IRMNet/(S(2oxaypefoudv2v45mdfq1x55))/res/RoomDetailsPage.aspx?Resort=01&RoomNum=ALLYN");
 
-$svr = new exclusivecaribbean();
-$svr->getinfo("http://calendar.exclusivecaribbeanproperty.com/index.php/bookings/get_year/104/2012-12-01/TRUE/");
+//$svr = new exclusivecaribbean();
+//$svr->getinfo("http://calendar.exclusivecaribbeanproperty.com/index.php/bookings/get_year/67/2012-12-01/TRUE/");
+//$svr->extactData("http://localhost:7075/DATA.HTML");
 
+//$svr = new bluewaysoftware();
+//$svr->getinfo("http://www.bluewaysoftware.com/Reservation.aspx?KEY=vb573");
+
+$svr = new tropicalvillas();
+$svr->getinfo("http://tropicalvillas.net/availability-calendar?propertyid=19468");
 
 ?>
